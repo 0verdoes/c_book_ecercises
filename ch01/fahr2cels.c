@@ -10,18 +10,39 @@
 //ecercise 1.4 convert the otherway
 double fahr2cels(double fahr)
 {
-    const double fahr2cels_factor = 5./9.;
-    const double fahr2cels_offset = -32.0;
+    static const double fahr2cels_factor = 5./9.;
+    static const double fahr2cels_offset = -32.0;
 
     return (fahr2cels_factor) * (fahr + fahr2cels_offset);
 }
 
 double cels2fahr(double cels)
 {
-    const double cels2fahr_factor = 9./5.;
-    const double cels2fahr_offset = 32.0;
+    static const double cels2fahr_factor = 9./5.;
+    static const double cels2fahr_offset = 32.0;
 
     return (cels * cels2fahr_factor) + cels2fahr_offset;
+}
+
+//needed for abtraction of conversion for loop
+int inc(int start, int amount)
+{
+    return start + amount;
+}
+
+int dec(int start, int amount)
+{
+    return start - amount;
+}
+
+bool smaller_eq(int a, int b)
+{
+    return a <= b;
+}
+
+bool bigger_eq(int a, int b)
+{
+    return smaller_eq(b, a);
 }
 
 typedef double (*conv_func_t)(double);
@@ -44,6 +65,7 @@ int main(int argc, char* argv[])
     //1.5: loop backwards exercise
     bool backwards   = false;
 
+    //parsing arguments
     if (1 < argc) {
         for (int arg = 1; arg < argc; ++arg) {
             for(size_t i = 0; i < ARGS_LEN; ++i) {
@@ -58,26 +80,32 @@ int main(int argc, char* argv[])
         }
     }
 
-    int lower = 0;
-    int upper = 200;
-    int step  = 25;
+    //defined bounds
+    const int lower = 0;
+    const int upper = 200;
+    const int step  = 25;
 
     //print heading
     printf("%s", heading);
-    if (!backwards) {
-        for(double temp = lower; temp <= upper; temp += step) {
-            double conv_temp = conv(temp);
-            //printf formatting: 3f-> leave 3 parts for the number
-            //3.5f => display 5 nums after the .
-            printf("%3.0f %7.2f\n", temp, conv_temp);
-        }
-    } else {
-        for(double temp = upper; lower <= temp; temp -= step) {
-            double conv_temp = conv(temp);
-            //printf formatting: 3f-> leave 3 parts for the number
-            //3.5f => display 5 nums after the .
-            printf("%3.0f %7.2f\n", temp, conv_temp);
-        }
+    //this much abstraction to not write 2 similar for loops
+    //probably doesn't wort it
+    int start = lower;
+    int end   = upper;
+    int (*next)(int, int) = inc;
+    bool (*finished) (int, int) = smaller_eq;
+
+    if (backwards) {
+        next = dec;
+        start = upper;
+        end  = lower;
+        finished = bigger_eq;
+    }
+
+    for(double temp = start; finished(temp, end); temp = next(temp, step)) {
+        double conv_temp = conv(temp);
+        //printf formatting: 3f-> leave 3 parts for the number
+        //3.5f => display 5 nums after the .
+        printf("%3.0f %7.2f\n", temp, conv_temp);
     }
 
     return 0;
