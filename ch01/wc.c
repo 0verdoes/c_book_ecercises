@@ -6,7 +6,10 @@
 #include <stdlib.h>
 
 //1.8 Write a program to count blanks, tabs, and newlines.
-enum whitespace_kinds {BLANK = 0, TAB = 1, NEWLINE = 2, WHITESPACE_LAST = 3 };
+//1.10 is same, but instead of counting print out \t instead of the tab
+//Pretty trivial exercise if 1.8 is already ready, could make a lookup table for that as well
+//
+enum whitespace_indeces {BLANK = 0, TAB = 1, NEWLINE = 2, WHITESPACE_LAST = 3 };
 
 int main(int argc, char* argv[])
 {
